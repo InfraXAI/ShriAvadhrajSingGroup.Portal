@@ -1,8 +1,9 @@
-import React, { useState, FormEvent } from "react";
+import React, { useState } from "react";
+import type { FormEvent } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import Man from "./assets/school.jpg";
+import Man from "./assets/school.jpg"; // You can replace this with your new illustration image
 
 const API_URL = "http://localhost:5000/api/auth";
 
@@ -21,13 +22,22 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const handleCreateAccount = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${API_URL}/register`, { name, email, password, role });
+      const res = await axios.post(`${API_URL}/register`, {
+        name,
+        email,
+        password,
+        role,
+      });
       toast.success(res.data.message, { position: "top-right" });
-      setName(""); setEmail(""); setPassword("");
+      setName("");
+      setEmail("");
+      setPassword("");
       setIsAccountCreated(true);
     } catch (err: unknown) {
       if (axios.isAxiosError(err) && err.response) {
-        toast.error(err.response.data.message || "Something went wrong!", { position: "bottom-right" });
+        toast.error(err.response.data.message || "Something went wrong!", {
+          position: "bottom-right",
+        });
       } else if (err instanceof Error) {
         toast.error(err.message, { position: "bottom-right" });
       } else {
@@ -39,17 +49,23 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${API_URL}/login`, { email, password, role });
+      const res = await axios.post(`${API_URL}/login`, {
+        email,
+        password,
+        role,
+      });
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("currentUser", JSON.stringify(res.data.user));
       localStorage.setItem("isLoggedIn", "true");
 
-      onLogin(); // notify App
+      onLogin();
       toast.success(res.data.message, { position: "top-right" });
-      navigate("/"); // redirect to Home
+      navigate("/");
     } catch (err: unknown) {
       if (axios.isAxiosError(err) && err.response) {
-        toast.error(err.response.data.message || "Invalid credentials!", { position: "bottom-right" });
+        toast.error(err.response.data.message || "Invalid credentials!", {
+          position: "bottom-right",
+        });
       } else if (err instanceof Error) {
         toast.error(err.message, { position: "bottom-right" });
       } else {
@@ -59,61 +75,135 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row items-center justify-center p-6 md:p-12 gap-10 md:gap-20 min-h-screen bg-gray-50">
-      <div className="w-full md:w-1/2 flex justify-center">
-        <img src={Man} alt="School" className="max-w-xs md:max-w-md rounded-lg shadow-lg" />
-      </div>
+    <div className="flex flex-col md:flex-row items-center justify-center min-h-screen">
+      <div className="relative w-full max-w-4xl rounded-2xl overflow-hidden shadow-lg bg-white bg-opacity-90 flex flex-col md:flex-row">
+     
+        <div className="w-full md:w-1/2 flex items-center justify-center p-6 bg-gray-100 relative">
+          
+          <img
+            src={Man}
+            alt="School Illustration"
+            className="w-full h-auto object-contain"
+          />
 
-      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-md">
-        {isAccountCreated ? (
-          <div>
-            <h1 className="text-3xl font-bold text-gray-800">Log in</h1>
-            <p className="text-sm text-gray-600 mt-2 font-semibold">Enter your details below</p>
+        </div>
 
-            <form onSubmit={handleLogin} className="flex flex-col gap-5 mt-6">
-              <select value={role} onChange={(e) => setRole(e.target.value as "admin" | "user")} className="border border-gray-400 rounded-md p-2 text-gray-700">
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-              </select>
-
-              <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="h-10 border-b border-gray-600 px-1" required />
-              <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="h-10 border-b border-gray-600 px-1" required />
-
-              <button type="submit" className="w-full h-12 bg-red-500 rounded-md text-white hover:bg-red-600 transition-all">Log In</button>
-            </form>
-
-            <div className="mt-4 flex justify-center gap-1">
-              <span className="text-gray-600">Don't have an account?</span>
-              <span className="text-red-500 cursor-pointer hover:underline" onClick={() => setIsAccountCreated(false)}>Sign up</span>
-            </div>
+        <div className="w-full md:w-1/2 p-8 md:p-12 bg-gray-100">
+          <div className="flex justify-center mb-6 gap-2">
+            <button
+              onClick={() => setRole("user")}
+              className={`py-2 px-6 rounded-full font-bold transition-colors ${
+                role === "user"
+                  ? "bg-red-600 text-white"
+                  : "bg-gray-200 text-gray-800"
+              }`}
+            >
+              User
+            </button>
+            <button
+              onClick={() => setRole("admin")}
+              className={`py-2 px-6 rounded-full font-bold transition-colors ${
+                role === "admin"
+                  ? "bg-red-600 text-white"
+                  : "bg-gray-200 text-gray-800"
+              }`}
+            >
+              Admin
+            </button>
           </div>
-        ) : (
-          <div>
-            <h1 className="text-3xl font-bold text-gray-800">Create an Account</h1>
-            <p className="text-sm text-gray-600 mt-2 font-semibold">Enter your details below</p>
 
-            <form onSubmit={handleCreateAccount} className="flex flex-col gap-5 mt-6">
-              <select value={role} onChange={(e) => setRole(e.target.value as "admin" | "user")} className="border border-gray-400 rounded-md p-2 text-gray-700">
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-              </select>
-
-              <input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} className="h-10 border-b border-gray-600 px-1" required />
-              <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="h-10 border-b border-gray-600 px-1" required />
-              <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="h-10 border-b border-gray-600 px-1" required />
-
-              <button type="submit" className="h-12 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-all">Create Account</button>
-            </form>
-
-            <div className="mt-4 flex justify-center gap-1">
-              <span className="text-gray-600">Already have an account?</span>
-              <span className="text-red-500 cursor-pointer hover:underline" onClick={() => setIsAccountCreated(true)}>Log in</span>
-            </div>
+          <div className="text-center mb-6">
+            <h1 className="text-2xl font-bold text-red-600">
+              {isAccountCreated ? "LOG IN" : "CREATE ACCOUNT"}
+            </h1>
           </div>
-        )}
+
+          {isAccountCreated ? (
+            <form onSubmit={handleLogin} className="flex flex-col gap-4">
+              <input
+                type="email"
+                placeholder="Email Address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <div className="flex justify-end text-sm text-gray-600">
+                <span className="hover:underline cursor-pointer">
+                  Forgot Password?
+                </span>
+              </div>
+              <button
+                type="submit"
+                className="w-full h-12 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Log In
+              </button>
+              <div className="text-center mt-4 text-sm">
+                <span className="text-gray-600">Don't have an account?</span>
+                <span
+                  className="text-blue-600 cursor-pointer hover:underline font-bold ml-1"
+                  onClick={() => setIsAccountCreated(false)}
+                >
+                  Sign up
+                </span>
+              </div>
+            </form>
+          ) : (
+            <form onSubmit={handleCreateAccount} className="flex flex-col gap-4">
+              <input
+                type="text"
+                placeholder="Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <button
+                type="submit"
+                className="w-full h-12 bg-red-600 text-white font-bold rounded-lg hover:bg-red-800 transition-colors"
+              >
+                Create Account
+              </button>
+              <div className="text-center mt-4 text-sm">
+                <span className="text-gray-600">Already have an account?</span>
+                <span
+                  className="text-red-600 cursor-pointer hover:underline font-bold ml-1"
+                  onClick={() => setIsAccountCreated(true)}
+                >
+                  Log in
+                </span>
+              </div>  ``
+            </form>
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default Login; 
