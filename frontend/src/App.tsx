@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./login";
 import Home from "./home";
-import LiquidEther from "./LiquidEther";
-// import Prism from './Prism';
+import Header from "./Header";
+// import Footer from "./Footer"; // ← footer import (agar bana hai)
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -13,28 +13,13 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative w-full h-screen">
-      <div className="absolute top-0 left-0 w-full h-full -z-10">
-        <LiquidEther
-          colors={["#5227FF", "#FF9FFC", "#B19EEF"]}
-          mouseForce={20}
-          cursorSize={100}
-          isViscous={false}
-          viscous={30}
-          iterationsViscous={32}
-          iterationsPoisson={32}
-          resolution={0.5}
-          isBounce={false}
-          autoDemo={true}
-          autoSpeed={0.3}
-          autoIntensity={2.2}
-          takeoverDuration={0.25}
-          autoResumeDelay={0}
-          autoRampDuration={0.6}
-        />
-      </div>
+    <div className="flex flex-col min-h-screen bg-gray-100">
 
-      <div className="relative z-10 w-full h-full">
+      <header className="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
+        <Header />
+      </header>
+
+      <main className="flex-grow pt-[80px] pb-[60px]">
         <Routes>
           <Route
             path="/"
@@ -56,8 +41,16 @@ const App: React.FC = () => {
               )
             }
           />
+          <Route
+            path="*"
+            element={<Navigate to={isLoggedIn ? "/" : "/login"} replace />}
+          />
         </Routes>
-      </div>
+      </main>
+
+      <footer className="bg-white shadow-inner w-full fixed bottom-0 left-0 z-40">
+        {/* <Footer /> */}
+      </footer>
     </div>
   );
 };
